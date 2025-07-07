@@ -1,0 +1,19 @@
+{
+  "name": "barcode-scanner-monorepo",
+  "private": true,
+  "description": "Monorepo for Barcode Scanner application",
+  "workspaces": ["client", "server"],
+  "scripts": {
+    "dev": "pnpm --parallel dev",
+    "build": "pnpm --filter \"./**\" build",
+    "start": "pm2 start pm2.config.js",
+    "stop": "pm2 stop pm2.config.js",
+    "delete": "pm2 delete pm2.config.js",
+    "lint": "pnpm --parallel lint"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5"
+  },
+  "packageManager": "pnpm@8.15.5"
+}
