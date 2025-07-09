@@ -12,11 +12,17 @@
     "start": "pm2 start pm2.config.js",
     "stop": "pm2 stop pm2.config.js",
     "delete": "pm2 delete pm2.config.js",
-    "lint": "pnpm --parallel lint"
+    "lint": "pnpm --parallel lint",
+    "lint:fix": "eslint . --fix"
   },
   "devDependencies": {
-    "prettier": "^3.2.5",
-    "typescript": "^5.4.5"
+    "eslint": "^9.29.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.8.3"
   },
-  "packageManager": "pnpm@10.12.4"
+  "packageManager": "pnpm@10.12.4",
+  "engines": {
+    "node": ">=20.18.0",
+    "pnpm": ">=10.0.0"
+  }
 }
