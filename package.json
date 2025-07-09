@@ -9,11 +9,23 @@
   "scripts": {
     "dev": "pnpm --parallel dev",
     "build": "pnpm --filter \"./**\" build",
+    "dev:client": "pnpm --filter barcode-scanner-client dev",
+    "dev:server": "pnpm --filter barcode-scanner-server start:dev",
+    "build:client": "pnpm --filter barcode-scanner-client build",
+    "build:server": "pnpm --filter barcode-scanner-server build",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css,yaml}\"",
+    "typecheck": "pnpm --parallel typecheck",
+    "test": "pnpm --filter barcode-scanner-server test",
+    "clean": "pnpm --parallel clean && rm -rf node_modules/.cache",
+    "fresh": "pnpm clean && rm -rf node_modules && pnpm install",
     "start": "pm2 start pm2.config.js",
     "stop": "pm2 stop pm2.config.js",
+    "restart": "pm2 restart pm2.config.js",
     "delete": "pm2 delete pm2.config.js",
-    "lint": "pnpm --parallel lint",
-    "lint:fix": "eslint . --fix"
+    "logs": "pm2 logs"
   },
   "devDependencies": {
     "eslint": "^9.29.0",
