@@ -31,7 +31,33 @@ export default function App() {
   const [cameras, setCameras] = useState<CameraDevice[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>('');
   const scannerRef = useRef<HTMLDivElement>(null);
-  const successTimer = useRef<number | null>(null); // => 브라우저 환경이라 number (React)
+  const successTimer = useRef<number | null>(null);
+
+  // ===== 🚀 최적화된 카메라 제약조건 함수 =====
+  const getOptimizedConstraints = (deviceId: string) => {
+    // 모바일 기기 감지
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      // 📱 모바일 최적화: 해상도 낮추고 프레임레이트 높임
+      return {
+        width: { ideal: 1280, min: 720 }, // 🔄 1920 → 1280
+        height: { ideal: 720, min: 480 }, // 🔄 1080 → 720
+        frameRate: { ideal: 30, min: 20 }, // 🔄 min 15 → 20
+        deviceId: { exact: deviceId },
+        facingMode: { ideal: 'environment' }, // 🆕 후면 카메라 우선
+      };
+    } else {
+      // 💻 데스크톱: 기존 설정 유지
+      return {
+        width: { ideal: 1920, min: 1280 },
+        height: { ideal: 1080, min: 720 },
+        frameRate: { ideal: 30, min: 15 },
+        deviceId: { exact: deviceId },
+        facingMode: { ideal: 'environment' }, // 🆕 추가
+      };
+    }
+  };
 
   // 제품 정보 조회 함수
   const fetchProductInfo = async (barcode: string) => {
@@ -107,7 +133,7 @@ export default function App() {
     };
   }, []);
 
-  // 카메라 로직
+  // ===== 개선 카메라 로딩 함수 =====
   const loadCameras = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -121,7 +147,16 @@ export default function App() {
       setCameras(videoDevices);
 
       if (videoDevices.length > 0) {
-        const backCamera = videoDevices.find((c) => c.label.toLowerCase().includes('back')) || videoDevices[0];
+        // 후면 카메라 더 정확하게 찾기
+        const backCamera =
+          videoDevices.find(
+            (c) =>
+              c.label.toLowerCase().includes('back') ||
+              c.label.toLowerCase().includes('rear') ||
+              c.label.toLowerCase().includes('environment') ||
+              c.label.toLowerCase().includes('후면'),
+          ) || videoDevices[0];
+
         setSelectedCamera(backCamera.deviceId);
       }
     } catch (err) {
@@ -131,7 +166,7 @@ export default function App() {
     }
   };
 
-  // 스캐너 제어
+  // ===== 🚀 최적화된 스캐너 시작 함수 =====
   const startScanning = () => {
     if (!Quagga || !scannerRef.current || !selectedCamera) return;
 
@@ -146,18 +181,22 @@ export default function App() {
           name: 'Live',
           type: 'LiveStream',
           target: scannerRef.current,
-          constraints: {
-            width: { ideal: 1920, min: 1280 },
-            height: { ideal: 1080, min: 720 },
-            frameRate: { ideal: 30, min: 15 },
-            deviceId: { exact: selectedCamera },
-            focusMode: 'continuous',
+          constraints: getOptimizedConstraints(selectedCamera), // 최적화된 설정 적용!
+          // 스캔 영역을 중앙으로 제한 (선택사항)
+          area: {
+            top: '25%',
+            right: '15%',
+            left: '15%',
+            bottom: '25%',
           },
         },
-        locator: { patchSize: 'medium', halfSample: true },
+        locator: {
+          patchSize: 'large', // medium → large (CODE39 최적화)
+          halfSample: false, // true → false (정확도 향상)
+        },
         decoder: { readers: ['code_39_reader'] },
         locate: true,
-        frequency: 10,
+        frequency: 25, // 10 → 25 (2.5배 빨라짐!)
       },
       (err: any) => {
         if (err) {
@@ -173,11 +212,34 @@ export default function App() {
     Quagga.onDetected(handleDetection);
   };
 
+  // TODO: 스캐너 중지 함수 안된다 나중에 카메라 스트림이 해제되지 않는 문제 해결
   const stopScanning = () => {
     if (Quagga?.initialized) {
       Quagga.offDetected(handleDetection);
       Quagga.stop();
+
+      const sd = Quagga.CameraAccess.getState();
+      console.log('카메라 상태:', sd);
+
+      // 🚨 카메라 스트림 완전 해제
+      try {
+        // 방법 1: Quagga2 CameraAccess API
+        if (Quagga.CameraAccess?.release) {
+          Quagga.CameraAccess.release();
+        }
+
+        // 방법 2: 직접 MediaStream 해제 (백업)
+        const video = scannerRef.current?.querySelector('video');
+        if (video?.srcObject) {
+          const stream = video.srcObject as MediaStream;
+          stream.getTracks().forEach((track) => track.stop());
+          video.srcObject = null;
+        }
+      } catch (error) {
+        console.error('카메라 해제 실패:', error);
+      }
     }
+
     if (scannerState === 'scanning') {
       setScannerState('idle');
     }
@@ -233,7 +295,7 @@ export default function App() {
         <div className="text-center">
           <ScanIcon className="mx-auto h-16 w-16 animate-pulse text-indigo-500 dark:text-indigo-400" />
           <h1 className="mt-4 text-2xl font-bold text-indigo-600 dark:text-indigo-400">스캐너 로딩 중...</h1>
-          <p className="text-slate-500 dark:text-slate-400">카메라 권한을 확인하고 있습니다.</p>
+          <p className="text-slate-500 dark:text-slate-400">최적화된 카메라 설정을 적용하고 있습니다.</p>
         </div>
       </div>
     );
@@ -255,6 +317,18 @@ export default function App() {
               ref={scannerRef}
               className="relative aspect-video w-full overflow-hidden rounded-xl bg-black shadow-inner [&>video]:h-full [&>video]:w-full [&>video]:object-cover"
             >
+              {/* 🆕 스캔 영역 가이드 (선택사항) */}
+              {scannerState === 'scanning' && (
+                <div className="pointer-events-none absolute inset-0">
+                  <div className="absolute top-[25%] right-[15%] bottom-[25%] left-[15%] rounded-lg border-2 border-green-400/50">
+                    <div className="absolute top-0 left-0 h-4 w-4 border-t-2 border-l-2 border-green-400"></div>
+                    <div className="absolute top-0 right-0 h-4 w-4 border-t-2 border-r-2 border-green-400"></div>
+                    <div className="absolute bottom-0 left-0 h-4 w-4 border-b-2 border-l-2 border-green-400"></div>
+                    <div className="absolute right-0 bottom-0 h-4 w-4 border-r-2 border-b-2 border-green-400"></div>
+                  </div>
+                </div>
+              )}
+
               <div
                 className={`absolute inset-0 transition-all duration-300 ${
                   scannerState === 'success' ? 'bg-green-500/30' : ''
@@ -273,7 +347,7 @@ export default function App() {
             </div>
 
             {/* 카메라 선택 */}
-            {cameras.length > 1 && (
+            {cameras.length >= 1 && (
               <div className="relative">
                 <select
                   value={selectedCamera}
