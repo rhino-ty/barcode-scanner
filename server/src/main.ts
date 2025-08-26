@@ -1,22 +1,45 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ConfigService } from '@nestjs/config';
+import { EnvVars } from './config/env.validation';
 
 async function bootstrap() {
+  // NestJS 앱 생성
   const app = await NestFactory.create(AppModule);
 
-  // CORS 설정 (클라이언트와 통신)
+  // config 생성
+  const config = app.get<ConfigService<EnvVars, true>>(ConfigService);
+
+  // 로거 설정
+  const nodeEnv = config.get('NODE_ENV', { infer: true });
+  app.useLogger(nodeEnv === 'development' ? ['error', 'warn', 'log', 'debug'] : ['error', 'warn', 'log']);
+
+  // CORS 설정
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: config.get('ALLOWED_ORIGINS', { infer: true }),
     credentials: true,
   });
 
-  // Global prefix 설정
+  // API prefix 설정
   app.setGlobalPrefix('api');
 
-  const port = process.env.PORT || 3001;
+  const port = config.get('PORT', { infer: true });
+
+  // 서버 시작
   await app.listen(port);
 
+  // 시작 메시지
   console.log(`Server running on http://localhost:${port}`);
   console.log(`API available at http://localhost:${port}/api`);
+  console.log(`Health check: http://localhost:${port}/api/health`);
+
+  if (nodeEnv === 'development') {
+    console.log(`Products API: http://localhost:${port}/api/products`);
+  }
 }
-bootstrap();
+
+// 에러 핸들링
+bootstrap().catch((error) => {
+  console.error('서버 시작 실패:', error.message);
+  process.exit(1);
+});
