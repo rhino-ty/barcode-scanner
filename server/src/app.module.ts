@@ -1,7 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { validate } from './config/env.validation';
-import databaseConfig from './config/database.config';
+import { DatabaseModule } from './database/database.module';
+import { AppController } from './app.controller';
+import { HealthModule } from './health/health.module';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -9,8 +12,11 @@ import databaseConfig from './config/database.config';
       isGlobal: true,
       envFilePath: `.env`,
       validate,
-      load: [databaseConfig],
     }),
+    DatabaseModule,
+    HealthModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
