@@ -13,6 +13,5 @@ import { MssqlHealthIndicator } from './mssql-health.indicator';
   ],
   controllers: [HealthController],
   providers: [MssqlHealthIndicator],
-  exports: [MssqlHealthIndicator], // 다른 모듈에서 재사용 가능
 })
 export class HealthModule {}

@@ -11,26 +11,25 @@ export class MssqlHealthIndicator extends HealthIndicator {
   }
 
   /**
-   * 기본 헬스체크
+   * 데이터베이스 헬스체크
    */
   async isHealthy(key: string): Promise<HealthIndicatorResult> {
     const startTime = Date.now();
 
     try {
-      // 1. 먼저 빠른 연결 상태 체크
+      // 1. 연결 상태 빠른 체크
       if (!this.databaseService.isHealthy()) {
-        throw new Error('Connection pool is not healthy');
+        throw new Error('Database connection is not healthy');
       }
 
-      // 2. DatabaseService의 헬스체크 메서드 활용
-      const healthResult = await this.databaseService.healthCheck();
+      // 2. 실제 쿼리 테스트
+      await this.databaseService.query('SELECT 1');
+
       const responseTime = Date.now() - startTime;
 
       return this.getStatus(key, true, {
         status: 'up',
         responseTime: `${responseTime}ms`,
-        server: healthResult.serverInfo,
-        timestamp: healthResult.timestamp,
       });
     } catch (error) {
       const responseTime = Date.now() - startTime;
@@ -38,7 +37,7 @@ export class MssqlHealthIndicator extends HealthIndicator {
       this.logger.warn(`Database health check failed (${responseTime}ms): ${error.message}`);
 
       throw new HealthCheckError(
-        'MSSQL health check failed',
+        'Database health check failed',
         this.getStatus(key, false, {
           status: 'down',
           message: error.message,
@@ -46,61 +45,5 @@ export class MssqlHealthIndicator extends HealthIndicator {
         }),
       );
     }
-  }
-
-  /**
-   * 상세 헬스체크: 필요할 때만 사용하는 옵션
-   */
-  async detailedCheck(key: string, options?: { timeout?: number }): Promise<HealthIndicatorResult> {
-    const timeout = options?.timeout || 3000;
-    const startTime = Date.now();
-
-    try {
-      // 연결 상태 먼저 확인 (빠른 실패)
-      if (!this.databaseService.isHealthy()) {
-        throw new Error('Connection pool is not healthy');
-      }
-
-      // 타임아웃 적용한 쿼리 실행
-      const result = await Promise.race([
-        this.databaseService.query('SELECT GETDATE() as serverTime, @@SERVERNAME as serverName'),
-        this.createTimeoutPromise(timeout),
-      ]);
-
-      const responseTime = Date.now() - startTime;
-      const serverInfo = result.recordset[0];
-
-      return this.getStatus(key, true, {
-        status: 'up',
-        responseTime: `${responseTime}ms`,
-        server: {
-          name: serverInfo.serverName,
-          time: serverInfo.serverTime,
-        },
-      });
-    } catch (error) {
-      const responseTime = Date.now() - startTime;
-
-      this.logger.error(`Database detailed check failed (${responseTime}ms): ${error.message}`);
-
-      throw new HealthCheckError(
-        'MSSQL detailed check failed',
-        this.getStatus(key, false, {
-          status: 'down',
-          message: error.message,
-          responseTime: `${responseTime}ms`,
-          threshold: `${timeout}ms`,
-        }),
-      );
-    }
-  }
-
-  /**
-   * 타임아웃 Promise 생성 유틸리티
-   */
-  private createTimeoutPromise(ms: number): Promise<never> {
-    return new Promise((_, reject) => {
-      setTimeout(() => reject(new Error(`Timeout after ${ms}ms`)), ms);
-    });
   }
 }
