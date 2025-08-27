@@ -28,8 +28,8 @@ export default registerAs('database', () => {
   return {
     connection: config,
     schema: process.env.DB_SCHEMA,
-    retryAttempts: 3,
-    retryDelay: 3000,
+    retryAttempts: process.env.DB_RETRY_ATTEMPTS,
+    retryDelay: process.env.DB_RETRY_DELAY,
     logging: process.env.NODE_ENV === 'development',
   };
 });

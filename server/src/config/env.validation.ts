@@ -92,6 +92,20 @@ export class EnvVars {
   @Transform(({ value }) => value === 'true', { toClassOnly: true })
   DB_TRUST_SERVER_CERTIFICATE: boolean;
 
+  @IsInt({ message: 'DB_RETRY_ATTEMPTS는 숫자여야 합니다.' })
+  @Min(1, { message: 'DB_RETRY_ATTEMPTS는 1 이상이어야 합니다.' })
+  @Max(10, { message: 'DB_RETRY_ATTEMPTS는 10 이하를 권장합니다.' })
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  DB_RETRY_ATTEMPTS: number = 3;
+
+  @IsInt({ message: 'DB_RETRY_DELAY는 숫자여야 합니다.' })
+  @Min(1000, { message: 'DB_RETRY_DELAY는 1000ms 이상을 권장합니다.' })
+  @Max(30000, { message: 'DB_RETRY_DELAY는 30초 이하를 권장합니다.' })
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  DB_RETRY_DELAY: number = 3000;
+
   // --- JWT ---
   @IsString()
   @MinLength(32, {
