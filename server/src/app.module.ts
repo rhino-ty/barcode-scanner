@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ProductsModule } from './products/products.module';
 import { validate } from './config/env.validation';
 import databaseConfig from './config/database.config';
 
@@ -12,7 +11,6 @@ import databaseConfig from './config/database.config';
       validate,
       load: [databaseConfig],
     }),
-    ProductsModule,
   ],
 })
 export class AppModule {}
