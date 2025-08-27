@@ -109,19 +109,35 @@ export class EnvVars {
   // --- JWT ---
   @IsString()
   @MinLength(32, {
-    message: 'Production 환경에서는 JWT_SECRET이 32자 이상이어야 합니다.',
+    message: 'Production 환경에서는 JWT_ACCESS_TOKEN_SECRET이 32자 이상이어야 합니다.',
     groups: [NodeEnv.Production],
   })
   @MinLength(16, {
-    message: 'JWT_SECRET은 16자 이상을 권장합니다.',
+    message: 'JWT_ACCESS_TOKEN_SECRET은 16자 이상을 권장합니다.',
     groups: [NodeEnv.Development, NodeEnv.Test],
   })
-  JWT_SECRET: string;
+  JWT_ACCESS_TOKEN_SECRET: string;
 
   @IsString()
-  @Matches(/^\d+[hdwmy]$/, { message: 'JWT_EXPIRES_IN 형식이 올바르지 않습니다 (예: 24h, 7d).' })
+  @Matches(/^\d+[hdwmy]$/, { message: 'JWT_ACCESS_TOKEN_EXPIRES_IN 형식이 올바르지 않습니다 (예: 12h, 1d).' })
   @IsOptional()
-  JWT_EXPIRES_IN: string = '24h';
+  JWT_ACCESS_TOKEN_EXPIRES_IN: string = '12h';
+
+  @IsString()
+  @MinLength(32, {
+    message: 'Production 환경에서는 JWT_REFRESH_TOKEN_SECRET이 32자 이상이어야 합니다.',
+    groups: [NodeEnv.Production],
+  })
+  @MinLength(16, {
+    message: 'JWT_REFRESH_TOKEN_SECRET은 16자 이상을 권장합니다.',
+    groups: [NodeEnv.Development, NodeEnv.Test],
+  })
+  JWT_REFRESH_TOKEN_SECRET: string;
+
+  @IsString()
+  @Matches(/^\d+[hdwmy]$/, { message: 'JWT_REFRESH_TOKEN_EXPIRES_IN 형식이 올바르지 않습니다 (예: 7d, 1m).' })
+  @IsOptional()
+  JWT_REFRESH_TOKEN_EXPIRES_IN: string = '7d';
 
   // --- Logging ---
   @IsEnum(LogLevel, { message: 'LOG_LEVEL은 error, warn, info, debug 중 하나여야 합니다.' })
@@ -149,7 +165,8 @@ export function validate(config: Record<string, unknown>) {
   console.log('\n환경변수 검증 완료');
   console.log(`Database: ${envVars.DB_HOST}:${envVars.DB_PORT}/${envVars.DB_DATABASE}`);
   console.log(`Environment: ${envVars.NODE_ENV}`);
-  console.log(`JWT 보안 수준: ${envVars.JWT_SECRET.length >= 32 ? '강함 (32자+)' : '보통 (16자+)'}`);
+  console.log(`Access TokenExpires In: ${envVars.JWT_ACCESS_TOKEN_EXPIRES_IN}`);
+  console.log(`Refresh TokenExpires In: ${envVars.JWT_REFRESH_TOKEN_EXPIRES_IN}`);
 
   return envVars;
 }
