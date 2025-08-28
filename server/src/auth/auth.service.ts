@@ -22,7 +22,12 @@ export class AuthService {
   /**
    * 사용자 인증 (LocalStrategy에서 호출)
    */
-  async validateUser(username: string, pass: string, ipAddress?: string): Promise<Omit<User, 'passwordHash'> | null> {
+  async validateUser(
+    username: string,
+    pass: string,
+    ipAddress?: string,
+    userAgent?: string,
+  ): Promise<Omit<User, 'passwordHash'> | null> {
     const user = await this.userService.findByUsername(username);
 
     if (!user) {
@@ -31,6 +36,7 @@ export class AuthService {
         { userId: null, username, fullName: null, teamCode: null, teamName: null } as any,
         'failed',
         ipAddress,
+        userAgent,
         { failureReason: 'User not found' },
       );
       throw new UnauthorizedException('잘못된 인증 정보입니다.');
@@ -38,7 +44,7 @@ export class AuthService {
 
     // 계정 잠금 상태 확인
     if (user.userStatus === 'locked' && user.accountLockedUntil && user.accountLockedUntil > new Date()) {
-      await this.createLoginLog(user, 'locked', ipAddress, {
+      await this.createLoginLog(user, 'locked', ipAddress, userAgent, {
         failureReason: 'Account is locked',
       });
       const minutesLeft = Math.ceil((new Date(user.accountLockedUntil).getTime() - new Date().getTime()) / 60000);
@@ -51,13 +57,13 @@ export class AuthService {
     if (!isPasswordMatching) {
       const lockedUntil = await this.userService.handleLoginFailure(user);
       const failureReason = lockedUntil ? 'Login failed, account has been locked' : 'Incorrect password';
-      await this.createLoginLog(user, 'failed', ipAddress, { failureReason });
+      await this.createLoginLog(user, 'failed', ipAddress, userAgent, { failureReason });
       throw new UnauthorizedException('잘못된 인증 정보입니다.');
     }
 
     // 로그인 성공 처리
     await this.userService.handleLoginSuccess(user.userId);
-    await this.createLoginLog(user, 'success', ipAddress);
+    await this.createLoginLog(user, 'success', ipAddress, userAgent);
 
     this.logger.log(`성공적인 로그인: ${user.username} (${ipAddress})`);
 
@@ -108,6 +114,36 @@ export class AuthService {
     };
   }
 
+  // userAgent 파싱 헬퍼 메서드
+  private parseDeviceInfo(userAgent?: string): string | null {
+    if (!userAgent) return null;
+
+    const ua = userAgent.toLowerCase();
+
+    // OS 감지
+    let os = 'Unknown';
+    if (ua.includes('windows')) os = 'Windows';
+    else if (ua.includes('mac os')) os = 'macOS';
+    else if (ua.includes('android')) os = 'Android';
+    else if (ua.includes('iphone') || ua.includes('ipad')) os = 'iOS';
+    else if (ua.includes('linux')) os = 'Linux';
+
+    // 브라우저 감지
+    let browser = 'Unknown';
+    if (ua.includes('chrome') && !ua.includes('edg')) browser = 'Chrome';
+    else if (ua.includes('firefox')) browser = 'Firefox';
+    else if (ua.includes('safari') && !ua.includes('chrome')) browser = 'Safari';
+    else if (ua.includes('edg')) browser = 'Edge';
+
+    // 디바이스 타입
+    let deviceType = 'Desktop';
+    if (ua.includes('mobile')) deviceType = 'Mobile';
+    else if (ua.includes('tablet') || ua.includes('ipad')) deviceType = 'Tablet';
+
+    return `${os}/${browser} (${deviceType})`;
+    // 결과 예: "macOS/Chrome (Desktop)", "Android/Chrome (Mobile)"
+  }
+
   /**
    * 로그인 로그 생성
    */
@@ -115,6 +151,7 @@ export class AuthService {
     user: Partial<User>,
     status: 'success' | 'failed' | 'locked',
     ipAddress?: string,
+    userAgent?: string,
     options?: { failureReason?: string },
   ): Promise<void> {
     try {
@@ -128,11 +165,13 @@ export class AuthService {
         .input('teamName', sql.NVarChar(100), user.teamName || null)
         .input('loginStatus', sql.NVarChar(20), status)
         .input('failureReason', sql.NVarChar(100), options?.failureReason || null)
-        .input('ipAddress', sql.NVarChar(45), ipAddress || null).query`
+        .input('ipAddress', sql.NVarChar(45), ipAddress || null)
+        .input('userAgent', sql.NVarChar(500), userAgent || null) // 🔧 추가
+        .input('deviceInfo', sql.NVarChar(100), this.parseDeviceInfo(userAgent) || null).query`
           INSERT INTO LoginLogs 
-            (userId, username, fullName, teamCode, teamName, loginStatus, failureReason, ipAddress) 
+            (userId, username, fullName, teamCode, teamName, loginStatus, failureReason, ipAddress, userAgent, deviceInfo) 
           VALUES 
-            (@userId, @username, @fullName, @teamCode, @teamName, @loginStatus, @failureReason, @ipAddress)
+            (@userId, @username, @fullName, @teamCode, @teamName, @loginStatus, @failureReason, @ipAddress, @userAgent, @deviceInfo)
         `;
     } catch (error) {
       this.logger.error(`로그인 로그 생성 실패: ${error.message}`);

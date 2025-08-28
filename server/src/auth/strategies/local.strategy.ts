@@ -28,8 +28,9 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
       req.socket?.remoteAddress ||
       req.ip ||
       'unknown';
+    const userAgent = req.headers['user-agent'] || 'unknown';
 
-    const user = await this.authService.validateUser(username, password, ipAddress);
+    const user = await this.authService.validateUser(username, password, ipAddress, userAgent);
 
     if (!user) {
       throw new UnauthorizedException('아이디 또는 비밀번호가 일치하지 않습니다.');
