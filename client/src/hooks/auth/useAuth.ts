@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { loginApi, refreshTokenApi, userProfileQueryOptions } from '@/api/auth';
 
-// ===== 토큰 관리 (메모리 상태) =====
+// 토큰 관리 (메모리 상태)
 let accessTokenState: string | null = null;
 
 export const getAccessToken = () => accessTokenState;
@@ -10,69 +10,40 @@ export const setAccessToken = (token: string | null) => {
   accessTokenState = token;
 };
 
-// 초기화 플래그 (중복 실행 방지)
-let isInitialized = false;
-
-/**
- * 로그인 훅
- */
 export const useLogin = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: loginApi,
-
     onSuccess: (data) => {
-      // 토큰 저장
       setAccessToken(data.accessToken);
       localStorage.setItem('refreshToken', data.refreshToken);
-
-      // 사용자 정보 캐시 설정 (네트워크 요청 절약)
       queryClient.setQueryData(userProfileQueryOptions(data.accessToken).queryKey, data.user);
-
-      // 모든 인증 관련 쿼리 무효화
       queryClient.invalidateQueries({ queryKey: ['auth'] });
     },
-
     onError: (error: any) => {
       console.error('로그인 실패:', error.message);
-      // 실패시 토큰 정리
       setAccessToken(null);
       localStorage.removeItem('refreshToken');
     },
   });
 };
 
-/**
- * 로그아웃 훅
- */
 export const useLogout = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async () => {
-      // 서버 로그아웃 API 호출 (선택사항)
-      // await apiRequest('/auth/logout', { method: 'POST' });
+      // 서버 로그아웃 API 호출은 따로
     },
-
     onSettled: () => {
-      // 성공/실패 관계없이 클라이언트 정리
       setAccessToken(null);
       localStorage.removeItem('refreshToken');
       queryClient.clear();
-
-      // 초기화 플래그 리셋
-      isInitialized = false;
     },
   });
 };
 
-/**
- * 토큰 갱신 훅
- */
 export const useRefreshToken = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async () => {
       const refreshToken = localStorage.getItem('refreshToken');
@@ -81,29 +52,21 @@ export const useRefreshToken = () => {
       }
       return refreshTokenApi(refreshToken);
     },
-
     onSuccess: (data) => {
-      // 새 토큰으로 업데이트
       setAccessToken(data.accessToken);
       localStorage.setItem('refreshToken', data.refreshToken);
-
-      // 사용자 정보도 업데이트
       queryClient.setQueryData(userProfileQueryOptions(data.accessToken).queryKey, data.user);
     },
-
-    onError: () => {
+    onError: (error) => {
       // 갱신 실패시 완전 로그아웃
+      console.error('토큰 갱신 실패:', error);
       setAccessToken(null);
-      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('refreshToken'); // 만료된 토큰 제거
       queryClient.clear();
-      isInitialized = false;
     },
   });
 };
 
-/**
- * 현재 사용자 정보 훅
- */
 export const useCurrentUser = () => {
   const accessToken = getAccessToken();
 
@@ -114,10 +77,8 @@ export const useCurrentUser = () => {
   });
 };
 
-/**
- * 통합 인증 훅 - 모든 인증 기능을 한 곳에서 관리
- */
 export const useAuth = () => {
+  const [initState, setInitState] = useState<'idle' | 'loading' | 'done' | 'failed'>('idle');
   const currentUser = useCurrentUser();
   const loginMutation = useLogin();
   const logoutMutation = useLogout();
@@ -125,33 +86,36 @@ export const useAuth = () => {
 
   // 앱 시작시 인증 복원 (중복 실행 방지)
   useEffect(() => {
-    if (isInitialized) return;
+    if (initState !== 'idle') return;
 
     const initAuth = async () => {
+      setInitState('loading');
+
       const refreshToken = localStorage.getItem('refreshToken');
+      const accessToken = getAccessToken();
 
       // 리프레시 토큰은 있지만 액세스 토큰이 없는 경우
-      if (refreshToken && !getAccessToken()) {
+      if (refreshToken && !accessToken) {
         try {
           await refreshMutation.mutateAsync();
+          setInitState('done');
         } catch (error) {
-          console.error(error);
-          // 복원 실패시 리프레시 토큰도 제거
-          localStorage.removeItem('refreshToken');
+          console.warn(error, '토큰 복원 실패, 로그인 필요');
+          setInitState('failed');
         }
+      } else {
+        setInitState('done');
       }
-
-      isInitialized = true;
     };
 
     initAuth();
-  }, [refreshMutation]);
+  }, [refreshMutation, initState]);
 
   return {
     // 상태
     user: currentUser.data,
     isAuthenticated: !!currentUser.data && !!getAccessToken(),
-    isLoading: currentUser.isPending || (refreshMutation.isPending && !isInitialized),
+    isLoading: initState === 'loading',
 
     // 액션
     login: loginMutation.mutate,
@@ -168,5 +132,8 @@ export const useAuth = () => {
     // 유틸리티
     refetchUser: currentUser.refetch,
     refreshToken: refreshMutation.mutate,
+
+    // 디버깅용
+    _initState: initState,
   };
 };
