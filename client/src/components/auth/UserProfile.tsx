@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth } from '@/auth/hooks/useAuth';
+import { useAuth } from '@/hooks/auth/useAuth';
 
 export const UserProfile: React.FC = () => {
   const { user, logout, isLoggingOut, isLoading } = useAuth();

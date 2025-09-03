@@ -1,6 +1,6 @@
-import { useAuth } from '@/auth/hooks/useAuth';
-import { LoginForm } from '@/auth/components/LoginForm';
-import { UserProfile } from '@/auth/components/UserProfile';
+import { useAuth } from '@/hooks/auth/useAuth';
+import { LoginForm } from '@/components/auth/LoginForm';
+import { UserProfile } from '@/components/auth/UserProfile';
 import { PageLoader } from '@/components/loading';
 
 export default function App() {

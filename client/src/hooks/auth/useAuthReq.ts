@@ -1,6 +1,6 @@
 // 인증이 필요한 API 호출시 자동으로 토큰 첨부 및 갱신 처리
 import { apiRequest } from '@/api/fetch-wrapper';
-import { getAccessToken, useAuth, useRefreshToken } from '@/auth/hooks/useAuth';
+import { getAccessToken, useAuth, useRefreshToken } from '@/hooks/auth/useAuth';
 
 /**
  * 인증된 API 요청 훅
