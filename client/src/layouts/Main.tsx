@@ -13,11 +13,14 @@ export const MainLayout = () => {
     return location.pathname.startsWith(path);
   };
 
-  // 네비게이션 메뉴 아이템
+  // 네비게이션 메뉴 아이템 (관리자 메뉴 추가)
   const navItems = [
     { path: '/', label: '홈', icon: '🏠' },
     { path: '/scanner', label: '바코드 스캐너', icon: '📷' },
     { path: '/scan-logs', label: '스캔 이력', icon: '📊' },
+    // 관리자만 볼 수 있는 메뉴
+    ...(user?.userType === 'admin' ? [{ path: '/admin', label: '관리자', icon: '⚙️' }] : []),
+    { path: '/profile', label: '프로필', icon: '👤' },
   ];
 
   return (
@@ -54,9 +57,14 @@ export const MainLayout = () => {
 
             {/* 사용자 정보 & 로그아웃 */}
             <div className="flex items-center space-x-4">
-              <span className="hidden text-sm text-slate-600 sm:block dark:text-slate-400">
-                안녕하세요, {user?.fullName}님
-              </span>
+              {/* 사용자 정보 (권한 표시 추가) */}
+              <div className="hidden text-right text-sm sm:block">
+                <div className="text-slate-600 dark:text-slate-400">안녕하세요, {user?.fullName}님</div>
+                {user?.userType === 'admin' && (
+                  <div className="text-xs text-purple-600 dark:text-purple-400">👑 관리자</div>
+                )}
+              </div>
+
               <button
                 onClick={() => logout()}
                 disabled={isLoggingOut}
@@ -69,19 +77,19 @@ export const MainLayout = () => {
 
           {/* 모바일 메뉴 */}
           <div className="border-t border-slate-200 py-3 md:hidden dark:border-slate-700">
-            <div className="flex space-x-1">
+            <div className="grid grid-cols-3 gap-1">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium transition-colors ${
+                  className={`flex flex-col items-center rounded-lg px-3 py-2 text-center text-xs font-medium transition-colors ${
                     isActive(item.path)
                       ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
                       : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100'
                   }`}
                 >
-                  <div className="text-lg">{item.icon}</div>
-                  <div className="text-xs">{item.label}</div>
+                  <div className="text-base">{item.icon}</div>
+                  <div className="mt-1">{item.label}</div>
                 </Link>
               ))}
             </div>

@@ -1,10 +1,10 @@
 import { createBrowserRouter } from 'react-router';
 import { AuthLayout } from '@/layouts/Auth';
 import { MainLayout } from '@/layouts/Main';
-import { HomePage } from '@/pages/Home';
 import { ScannerPage } from '@/pages/Scanner';
-import { ScanLogsPage } from '@/pages/ScanLogs';
 import { ErrorPage } from '@/pages/Error';
+import { ProfilePage } from '@/pages/Profile';
+import { AdminPage } from '@/pages/Admin';
 
 export const router = createBrowserRouter(
   [
@@ -15,19 +15,19 @@ export const router = createBrowserRouter(
       children: [
         {
           path: '/',
-          element: <MainLayout />, // 메인 레이아웃 (네비게이션 포함)
+          element: <MainLayout />, // 메인 레이아웃 (헤더 + 컨텐츠)
           children: [
             {
-              index: true, // path: '/'와 동일
-              element: <HomePage />,
-            },
-            {
-              path: 'scanner',
+              index: true, // path: '/' 메인 페이지는 바로 스캐너
               element: <ScannerPage />,
             },
             {
-              path: 'scan-logs',
-              element: <ScanLogsPage />,
+              path: 'profile',
+              element: <ProfilePage />,
+            },
+            {
+              path: 'admin',
+              element: <AdminPage />,
             },
           ],
         },

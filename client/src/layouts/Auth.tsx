@@ -2,7 +2,7 @@
 import { Outlet } from 'react-router';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { LoginForm } from '@/components/auth/LoginForm';
-import { PageLoader } from '@/components/loading';
+import { PageLoader } from '@/components/Loading';
 
 export const AuthLayout = () => {
   const { isAuthenticated, isLoading } = useAuth();
