@@ -42,7 +42,7 @@ export const LoginForm: React.FC = () => {
           </svg>
         </div>
         <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100">로그인</h2>
-        <p className="mt-2 text-slate-600 dark:text-slate-400">바코드 스캐너 시스템</p>
+        <p className="mt-2 text-slate-600 dark:text-slate-400">아르네 출하관리 시스템</p>
       </div>
 
       {/* 폼 */}
@@ -101,13 +101,6 @@ export const LoginForm: React.FC = () => {
             '로그인'
           )}
         </button>
-      </div>
-
-      {/* 테스트 계정 안내 */}
-      <div className="mt-6 text-center">
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          테스트 계정: <code className="rounded bg-slate-100 px-2 py-1 dark:bg-slate-700">admin / admin123</code>
-        </p>
       </div>
     </div>
   );
