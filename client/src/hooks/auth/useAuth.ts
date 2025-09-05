@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { loginApi, refreshTokenApi, userProfileQueryOptions } from '@/api/auth';
+import { useNavigate } from 'react-router';
 
 // 토큰 관리 (메모리 상태)
 let accessTokenState: string | null = null;
@@ -12,6 +13,8 @@ export const setAccessToken = (token: string | null) => {
 
 export const useLogin = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
   return useMutation({
     mutationFn: loginApi,
     onSuccess: (data) => {
@@ -19,8 +22,9 @@ export const useLogin = () => {
       localStorage.setItem('refreshToken', data.refreshToken);
       queryClient.setQueryData(userProfileQueryOptions(data.accessToken).queryKey, data.user);
       queryClient.invalidateQueries({ queryKey: ['auth'] });
+      navigate('/', { replace: true });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error('로그인 실패:', error.message);
       setAccessToken(null);
       localStorage.removeItem('refreshToken');
@@ -30,6 +34,8 @@ export const useLogin = () => {
 
 export const useLogout = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
   return useMutation({
     mutationFn: async () => {
       // 서버 로그아웃 API 호출은 따로
@@ -38,12 +44,15 @@ export const useLogout = () => {
       setAccessToken(null);
       localStorage.removeItem('refreshToken');
       queryClient.clear();
+      navigate('/', { replace: true });
     },
   });
 };
 
 export const useRefreshToken = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
   return useMutation({
     mutationFn: async () => {
       const refreshToken = localStorage.getItem('refreshToken');
@@ -58,11 +67,13 @@ export const useRefreshToken = () => {
       queryClient.setQueryData(userProfileQueryOptions(data.accessToken).queryKey, data.user);
     },
     onError: (error) => {
+      alert('인증이 만료되었습니다. 다시 로그인해주세요.');
       // 갱신 실패시 완전 로그아웃
       console.error('토큰 갱신 실패:', error);
       setAccessToken(null);
       localStorage.removeItem('refreshToken'); // 만료된 토큰 제거
       queryClient.clear();
+      navigate('/', { replace: true });
     },
   });
 };

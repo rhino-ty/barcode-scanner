@@ -1,11 +1,23 @@
 // 인증 체크 레이아웃
-import { Outlet } from 'react-router';
+import { Outlet, useNavigate } from 'react-router';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { PageLoader } from '@/components/Loading';
+import { useEffect } from 'react';
 
 export const AuthLayout = () => {
   const { isAuthenticated, isLoading } = useAuth();
+  const navigate = useNavigate();
+
+  // 인증 상태 변화 감지 및 URL 동기화
+  useEffect(() => {
+    if (isLoading) return;
+
+    // 인증되지 않은 상태에서 보호된 경로에 있으면 루트로 리다이렉트
+    if (!isAuthenticated) {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
 
   // 인증 상태 로딩 중
   if (isLoading) {
