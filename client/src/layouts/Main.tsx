@@ -15,10 +15,14 @@ export const MainLayout = () => {
     return location.pathname.startsWith(path);
   };
 
+  const handleLogout = () => {
+    logout();
+  };
+
   // 업무 메뉴 그룹
   const workMenuItems = [
     { path: '/', label: '바코드 스캔', icon: '📷' },
-    { path: '/scan-logs', label: '스캔 통계', icon: '📊' },
+    // { path: '/scan-logs', label: '스캔 통계', icon: '📊' },
     ...(user?.userType === 'admin' ? [{ path: '/admin', label: '관리자', icon: '⚙️' }] : []),
   ];
 
@@ -28,7 +32,7 @@ export const MainLayout = () => {
   // 하단 탭 메뉴 (모바일 전용)
   const bottomTabItems = [
     { path: '/', label: '스캔', icon: '📷' },
-    { path: '/scan-logs', label: '통계', icon: '📊' },
+    // { path: '/scan-logs', label: '통계', icon: '📊' },
     ...(user?.userType === 'admin' ? [{ path: '/admin', label: '관리자', icon: '⚙️' }] : []),
     { path: '/profile', label: '내정보', icon: '👤' },
   ];
@@ -134,7 +138,7 @@ export const MainLayout = () => {
                 ))}
 
                 <button
-                  onClick={logout}
+                  onClick={handleLogout}
                   disabled={isLoggingOut}
                   className="flex w-full items-center rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
                 >
