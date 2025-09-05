@@ -156,7 +156,7 @@ export const ScannerPage = () => {
         locate: true,
         frequency: 25, // 스캔 속도 최적화
       },
-      (err: any) => {
+      (err: Error) => {
         if (err) {
           console.error('Quagga 초기화 실패:', err);
           setError('카메라 시작에 실패했습니다. 다른 카메라를 선택하거나 페이지를 새로고침해주세요.');

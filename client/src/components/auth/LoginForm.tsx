@@ -80,9 +80,7 @@ export const LoginForm: React.FC = () => {
         {/* 에러 메시지 */}
         {loginError && (
           <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/30">
-            <p className="text-sm text-red-700 dark:text-red-400">
-              {(loginError as any)?.message || '로그인에 실패했습니다.'}
-            </p>
+            <p className="text-sm text-red-700 dark:text-red-400">{loginError?.message || '로그인에 실패했습니다.'}</p>
           </div>
         )}
 
