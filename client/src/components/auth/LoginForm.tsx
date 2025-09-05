@@ -5,7 +5,7 @@ export const LoginForm: React.FC = () => {
   const { login, isLoggingIn, loginError } = useAuth();
   const [formData, setFormData] = useState({ username: '', password: '' });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!formData.username || !formData.password) {
@@ -45,27 +45,35 @@ export const LoginForm: React.FC = () => {
         <p className="mt-2 text-slate-600 dark:text-slate-400">아르네 출하관리 시스템</p>
       </div>
 
-      {/* 폼 */}
-      <div className="space-y-6">
+      {/* form */}
+      <form onSubmit={handleSubmit} className="space-y-6" noValidate>
         <div>
-          <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">사용자명</label>
+          <label htmlFor="username" className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
+            사용자명
+          </label>
           <input
             type="text"
+            id="username"
             name="username"
             value={formData.username}
             onChange={handleChange}
             disabled={isLoggingIn}
             required
+            autoFocus // 페이지 로드시 자동 포커스
             className="w-full rounded-lg border border-slate-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
             placeholder="사용자명을 입력하세요"
             autoComplete="username"
+            spellCheck={false} // 맞춤법 검사 비활성화
           />
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">비밀번호</label>
+          <label htmlFor="password" className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
+            비밀번호
+          </label>
           <input
             type="password"
+            id="password"
             name="password"
             value={formData.password}
             onChange={handleChange}
@@ -79,14 +87,18 @@ export const LoginForm: React.FC = () => {
 
         {/* 에러 메시지 */}
         {loginError && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/30">
+          <div
+            className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/30"
+            role="alert"
+            aria-live="polite"
+          >
             <p className="text-sm text-red-700 dark:text-red-400">{loginError?.message || '로그인에 실패했습니다.'}</p>
           </div>
         )}
 
-        {/* 로그인 버튼 */}
+        {/* submit */}
         <button
-          onClick={handleSubmit}
+          type="submit"
           disabled={isLoggingIn || !formData.username || !formData.password}
           className="w-full rounded-lg bg-indigo-600 px-4 py-3 font-bold text-white transition-colors hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 focus:outline-none disabled:cursor-not-allowed disabled:bg-indigo-400"
         >
@@ -99,7 +111,7 @@ export const LoginForm: React.FC = () => {
             '로그인'
           )}
         </button>
-      </div>
+      </form>
     </div>
   );
 };
