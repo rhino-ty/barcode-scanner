@@ -51,7 +51,7 @@ export const LoginForm: React.FC = () => {
             </svg>
           </div>
           <h1 className="text-4xl font-bold text-slate-900 md:text-3xl dark:text-slate-100">로그인</h1>
-          <p className="mt-3 text-lg text-slate-600 md:mt-2 md:text-base dark:text-slate-400">아르네 출하관리 시스템</p>
+          <p className="mt-3 text-lg text-slate-600 md:mt-2 md:text-base dark:text-slate-400">출하관리 시스템</p>
         </div>
 
         {/* 폼 */}
