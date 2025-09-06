@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation } from 'react-router';
-import { useAuth } from '@/hooks/auth/useAuth';
 import { useState } from 'react';
+import { useAuth } from '@/hooks/auth/useAuth.ts';
 
 export const MainLayout = () => {
   const location = useLocation();

@@ -1,5 +1,5 @@
 import { queryOptions } from '@tanstack/react-query';
-import { apiRequest } from '@/api/fetch-wrapper';
+import { apiRequest } from '@/api/fetch-wrapper.ts';
 
 // ===== 타입 정의 =====
 export interface User {

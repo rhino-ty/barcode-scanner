@@ -1,10 +1,10 @@
 import { createBrowserRouter } from 'react-router';
-import { AuthLayout } from '@/layouts/Auth';
-import { MainLayout } from '@/layouts/Main';
-import { ScannerPage } from '@/pages/Scanner';
-import { ErrorPage } from '@/pages/Error';
-import { ProfilePage } from '@/pages/Profile';
-import { AdminPage } from '@/pages/Admin';
+import { AuthLayout } from '@/layouts/Auth.tsx';
+import { MainLayout } from '@/layouts/Main.tsx';
+import { ScannerPage } from '@/pages/Scanner.tsx';
+import { ErrorPage } from '@/pages/Error.tsx';
+import { ProfilePage } from '@/pages/Profile.tsx';
+import { AdminPage } from '@/pages/Admin.tsx';
 
 export const router = createBrowserRouter(
   [

@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from 'react-router';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { router } from '@/router';
+import { router } from '@/router.tsx';
 
 // QueryClient 인스턴스 생성 (앱 전체에서 하나만 사용)
 const queryClient = new QueryClient({

@@ -1,9 +1,9 @@
 // 인증 체크 레이아웃
 import { Outlet, useNavigate } from 'react-router';
-import { useAuth } from '@/hooks/auth/useAuth.tsx';
+import { useEffect } from 'react';
+import { useAuth } from '@/hooks/auth/useAuth.ts';
 import { LoginForm } from '@/components/auth/LoginForm.tsx';
 import { PageLoader } from '@/components/Loading.tsx';
-import { useEffect } from 'react';
 
 export const AuthLayout = () => {
   const { isAuthenticated, isLoading } = useAuth();

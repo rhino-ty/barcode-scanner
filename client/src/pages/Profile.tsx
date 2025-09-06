@@ -1,5 +1,5 @@
-import InfoCard from '@/components/InfoCard';
-import { useAuth } from '@/hooks/auth/useAuth';
+import InfoCard from '@/components/InfoCard.tsx';
+import { useAuth } from '@/hooks/auth/useAuth.ts';
 
 export const ProfilePage = () => {
   const { user } = useAuth();

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ScanResultModal } from '@/components/ScanResultModal';
+import { ScanResultModal } from '@/components/ScanResultModal.tsx';
 
 // 타입 정의
 let Quagga: any = null;

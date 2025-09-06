@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth } from '@/hooks/auth/useAuth';
+import { useAuth } from '@/hooks/auth/useAuth.ts';
 
 export const AdminPage = () => {
   const { user } = useAuth();
