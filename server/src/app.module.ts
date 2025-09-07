@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ScanLogsModule } from './scan-logs/scan-logs.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ScanLogsModule } from './scan-logs/scan-logs.module';
     UserModule,
     AuthModule,
     ScanLogsModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
