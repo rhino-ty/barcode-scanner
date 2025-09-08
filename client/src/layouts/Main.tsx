@@ -24,7 +24,7 @@ export const MainLayout = () => {
     ...(user?.userType === 'admin' ? [{ path: '/admin', label: '관리자', icon: '⚙️' }] : []),
   ];
 
-  // 개인 메뉴 그룹 (사이드바 전용)
+  // 개인 메뉴 그룹 (데스크톱 사이드바 전용)
   const personalMenuItems = [{ path: '/profile', label: '내 정보', icon: '👤' }];
 
   // 하단 탭 메뉴 (모바일 전용)
@@ -44,18 +44,18 @@ export const MainLayout = () => {
           <div className="border-b border-slate-200 p-6 dark:border-slate-700">
             <Link
               to="/"
-              className="mb-4 block text-xl font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+              className="mb-4 block text-center text-xl font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
             >
               출하관리 시스템
             </Link>
 
             {/* 사용자 정보 표시 (클릭 불가) */}
-            <div className="flex items-center rounded-lg bg-slate-50 p-3 dark:bg-slate-700">
+            <div className="flex items-center justify-between rounded-lg bg-slate-50 p-3 dark:bg-slate-700">
               <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-sm font-bold text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">
                 {user?.fullName?.charAt(0) || 'U'}
               </div>
               <div className="flex-1">
-                <div className="font-medium text-slate-900 dark:text-slate-100">{user?.fullName}</div>
+                <div className="text-center font-medium text-slate-900 dark:text-slate-100">{user?.fullName}</div>
               </div>
             </div>
           </div>
@@ -122,7 +122,7 @@ export const MainLayout = () => {
       {/* 모바일 레이아웃 */}
       <div className="flex flex-1 flex-col md:ml-0">
         {/* 모바일 상단 헤더 (<768px) */}
-        <header className="border-b border-slate-200 bg-white p-4 md:hidden dark:border-slate-700 dark:bg-slate-800">
+        <header className="fixed top-0 right-0 left-0 z-50 border-b border-slate-200 bg-white p-4 md:hidden dark:border-slate-700 dark:bg-slate-800">
           <div className="flex items-center justify-between">
             {/* 로고 */}
             <Link to="/" className="text-xl font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">
@@ -142,7 +142,7 @@ export const MainLayout = () => {
         </header>
 
         {/* 메인 컨텐츠 */}
-        <main className="flex-1 p-4 pb-20 md:p-8 md:pb-8">
+        <main className="flex-1 p-4 pt-20 pb-20 md:p-8 md:pt-8 md:pb-8">
           <Outlet />
         </main>
 
