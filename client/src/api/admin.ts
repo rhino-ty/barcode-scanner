@@ -1,4 +1,5 @@
 import { apiRequest } from '@/api/fetch-wrapper';
+import { cleanUserFormData, formatValidationErrors, validateUserFormData } from '@/utils/userValidation';
 
 // ===== 기본 타입 정의 =====
 export interface AdminStats {
@@ -157,16 +158,51 @@ export const getUsersApi = async (token: string, params: UsersQueryParams = {}):
  */
 export const createUserApi = async (token: string, userData: CreateUserRequest): Promise<AdminUser> => {
   console.log(`사용자 등록 API 호출: ${userData.username}`);
-  // 빈 문자열 정제
-  const cleanData = Object.fromEntries(
-    Object.entries(userData).filter(([, value]) => value !== ''),
-  ) as CreateUserRequest;
 
-  return apiRequest<AdminUser>('/admin/users', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}` },
-    body: JSON.stringify(cleanData),
-  });
+  try {
+    // 1단계: 데이터 정제
+    const cleanedData = cleanUserFormData(userData);
+
+    // 2단계: 클라이언트 검증
+    const validation = validateUserFormData(cleanedData);
+
+    if (!validation.isValid) {
+      const errorMessage = formatValidationErrors(validation.errors);
+      console.error('클라이언트 검증 실패:', validation.errors);
+      throw new Error(`입력 데이터 검증 실패:\n${errorMessage}`);
+    }
+
+    // 3단계: 경고 메시지 로깅 (검증은 통과하지만 권고사항)
+    if (validation.warnings && Object.keys(validation.warnings).length > 0) {
+      console.warn('⚠️ 권고사항:', validation.warnings);
+    }
+
+    // 4단계: API 요청용 데이터 변환
+    const apiData: CreateUserRequest = {
+      username: cleanedData.username,
+      password: cleanedData.password,
+      fullName: cleanedData.fullName,
+      userType: cleanedData.userType || 'user',
+      // 선택적 필드들 (undefined면 제외됨)
+      ...(cleanedData.email && { email: cleanedData.email }),
+      ...(cleanedData.phone && { phone: cleanedData.phone }),
+      ...(cleanedData.teamCode && { teamCode: cleanedData.teamCode }),
+      ...(cleanedData.teamName && { teamName: cleanedData.teamName }),
+      ...(cleanedData.employeeNo && { employeeNo: cleanedData.employeeNo }),
+      ...(cleanedData.position && { position: cleanedData.position }),
+    };
+
+    const result = await apiRequest<AdminUser>('/admin/users', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify(apiData),
+    });
+
+    return result;
+  } catch (error) {
+    console.error('사용자 등록 실패:', error);
+    throw error;
+  }
 };
 
 /**

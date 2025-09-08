@@ -67,7 +67,7 @@ export const CreateUserModal = ({ onClose, onSubmit, isLoading }: CreateUserModa
   );
 };
 
-// 하위 컴포넌트들
+// ====== 하위 컴포넌트들 =======
 interface ModalHeaderProps {
   onClose: () => void;
   isLoading: boolean;
@@ -106,7 +106,7 @@ const RequiredFields = ({ formData, onChange, isLoading }: FormFieldsProps) => (
       onChange={onChange}
       disabled={isLoading}
       required
-      placeholder="영문, 숫자, 언더스코어만 사용"
+      placeholder="3자 이상 (영문, 숫자, 언더스코어)"
     />
 
     <FormField
@@ -128,6 +128,7 @@ const RequiredFields = ({ formData, onChange, isLoading }: FormFieldsProps) => (
       onChange={onChange}
       disabled={isLoading}
       required
+      placeholder="실명 입력"
     />
   </>
 );
