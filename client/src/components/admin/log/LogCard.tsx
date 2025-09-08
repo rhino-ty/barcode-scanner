@@ -7,7 +7,7 @@ interface LogCardProps {
 
 export const LogCard = ({ log, type }: LogCardProps) => {
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
+    <div className="rounded-lg border border-slate-200 bg-white px-4 py-2 dark:border-slate-700 dark:bg-slate-800">
       <div className="flex items-center justify-between">
         <LogInfo log={log} type={type} />
         <LogTime log={log} type={type} />
@@ -25,11 +25,13 @@ interface LogInfoProps {
 const LogInfo = ({ log, type }: LogInfoProps) => (
   <div className="flex items-center gap-3">
     <StatusDot status={getLogStatus(log, type)} />
-    <div>
+    <div className="lg:flex lg:gap-2 lg:align-middle">
       <div className="font-medium text-slate-900 dark:text-slate-100">
         {log.fullName || log.username || 'Unknown User'}
       </div>
-      <LogDetail log={log} type={type} />
+      <div className="mt-0 lg:mt-0.5">
+        <LogDetail log={log} type={type} />
+      </div>
     </div>
   </div>
 );
@@ -72,11 +74,11 @@ const LogTime = ({ log, type }: LogTimeProps) => {
   const date = new Date(timestamp);
 
   return (
-    <div className="text-right text-sm text-slate-500 dark:text-slate-400">
+    <div className="text-right text-sm text-slate-500 lg:flex lg:gap-2 lg:align-middle dark:text-slate-400">
       <div>{date.toLocaleDateString('ko-KR')}</div>
-      <div className="text-xs">{date.toLocaleTimeString('ko-KR')}</div>
+      <div className="text-sm">{date.toLocaleTimeString('ko-KR')}</div>
       {type === 'login' && (log as LoginLog).ipAddress && (
-        <div className="text-xs opacity-75">{(log as LoginLog).ipAddress}</div>
+        <div className="text-sm opacity-75">{(log as LoginLog).ipAddress}</div>
       )}
     </div>
   );

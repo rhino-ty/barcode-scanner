@@ -62,7 +62,7 @@ const LogsList = ({ logType, loginLogs, scanLogs }: LogsListProps) => {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 lg:space-y-2">
       {logs.map((log) => (
         <LogCard key={log.logId} log={log} type={logType} />
       ))}
