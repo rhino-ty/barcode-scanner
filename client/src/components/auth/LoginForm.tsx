@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/auth/useAuth';
+import { useLocation, useNavigate } from 'react-router';
 
 export const LoginForm: React.FC = () => {
   const { login, isLoggingIn, loginError } = useAuth();
   const [formData, setFormData] = useState({ username: '', password: '' });
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.pathname || '/';
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -12,7 +16,11 @@ export const LoginForm: React.FC = () => {
       return;
     }
 
-    login(formData);
+    login(formData, {
+      onSuccess: () => {
+        navigate(from, { replace: true });
+      },
+    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
