@@ -21,8 +21,8 @@ export const MainLayout = () => {
 
   // 업무 메뉴 그룹
   const workMenuItems = [
-    { path: '/', label: '바코드 스캔', icon: '📷' },
-    // { path: '/scan-logs', label: '스캔 통계', icon: '📊' },
+    { path: '/', label: '출하 등록', icon: '📦' },
+    { path: '/shipment-logs', label: '출하 관리', icon: '📊' }, // 임시 메뉴 추가
     ...(user?.userType === 'admin' ? [{ path: '/admin', label: '관리자', icon: '⚙️' }] : []),
   ];
 
@@ -31,8 +31,8 @@ export const MainLayout = () => {
 
   // 하단 탭 메뉴 (모바일 전용)
   const bottomTabItems = [
-    { path: '/', label: '스캔', icon: '📷' },
-    // { path: '/scan-logs', label: '통계', icon: '📊' },
+    { path: '/', label: '출하등록', icon: '📦' },
+    { path: '/shipment-logs', label: '출하관리', icon: '📊' }, // 임시 메뉴 추가
     ...(user?.userType === 'admin' ? [{ path: '/admin', label: '관리자', icon: '⚙️' }] : []),
     { path: '/profile', label: '내정보', icon: '👤' },
   ];
@@ -48,7 +48,7 @@ export const MainLayout = () => {
               to="/"
               className="mb-4 block text-xl font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
             >
-              바코드 스캐너
+              출하관리 시스템
             </Link>
 
             <button
@@ -140,7 +140,7 @@ export const MainLayout = () => {
                 <button
                   onClick={handleLogout}
                   disabled={isLoggingOut}
-                  className="flex w-full items-center rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
+                  className="flex w-full cursor-pointer items-center rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
                 >
                   <span className="mr-3 text-base">🚪</span>
                   {isLoggingOut ? '로그아웃 중...' : '로그아웃'}
@@ -158,7 +158,7 @@ export const MainLayout = () => {
           <div className="flex items-center justify-between">
             {/* 로고 */}
             <Link to="/" className="text-xl font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">
-              바코드 스캐너
+              출하관리
             </Link>
 
             {/* 사용자명 버튼 */}
