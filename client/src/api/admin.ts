@@ -157,11 +157,15 @@ export const getUsersApi = async (token: string, params: UsersQueryParams = {}):
  */
 export const createUserApi = async (token: string, userData: CreateUserRequest): Promise<AdminUser> => {
   console.log(`사용자 등록 API 호출: ${userData.username}`);
+  // 빈 문자열 정제
+  const cleanData = Object.fromEntries(
+    Object.entries(userData).filter(([, value]) => value !== ''),
+  ) as CreateUserRequest;
 
   return apiRequest<AdminUser>('/admin/users', {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
-    body: JSON.stringify(userData),
+    body: JSON.stringify(cleanData),
   });
 };
 
