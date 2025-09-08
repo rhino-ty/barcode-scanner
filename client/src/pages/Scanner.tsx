@@ -279,7 +279,7 @@ export const ScannerPage = () => {
         <button
           onClick={scannerState === 'scanning' ? stopScanning : startScanning}
           disabled={scannerState === 'success' || scannerState === 'loading' || !selectedCamera}
-          className={`flex items-center justify-center gap-3 rounded-xl px-6 py-4 text-lg font-bold text-white shadow-lg transition-all hover:scale-105 focus:ring-4 focus:outline-none ${
+          className={`flex cursor-pointer items-center justify-center gap-3 rounded-xl px-6 py-4 text-lg font-bold text-white shadow-lg transition-all hover:scale-[102.5%] hover:shadow-xl focus:ring-4 focus:outline-none ${
             scannerState === 'scanning'
               ? 'bg-red-600 hover:bg-red-700 focus:ring-red-300'
               : 'bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-300'
@@ -290,7 +290,7 @@ export const ScannerPage = () => {
 
         <button
           onClick={handleReset}
-          className="flex items-center justify-center gap-3 rounded-xl bg-slate-200 px-6 py-4 text-lg font-semibold text-slate-700 shadow-lg transition-all hover:scale-105 hover:bg-slate-300 focus:ring-4 focus:ring-slate-300 focus:outline-none dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 dark:focus:ring-slate-500"
+          className="flex cursor-pointer items-center justify-center gap-3 rounded-xl bg-slate-200 px-6 py-4 text-lg font-semibold text-slate-700 shadow-lg transition-all hover:scale-[102.5%] hover:bg-slate-300 hover:shadow-xl focus:ring-4 focus:ring-slate-300 focus:outline-none dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 dark:focus:ring-slate-500"
         >
           <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
