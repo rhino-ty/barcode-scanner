@@ -1,10 +1,11 @@
 import { createBrowserRouter } from 'react-router';
-import { AuthLayout } from '@/layouts/Auth.tsx';
-import { MainLayout } from '@/layouts/Main.tsx';
-import { ScannerPage } from '@/pages/Scanner.tsx';
-import { ErrorPage } from '@/pages/Error.tsx';
-import { ProfilePage } from '@/pages/Profile.tsx';
-import { AdminPage } from '@/pages/Admin.tsx';
+import { AuthLayout } from '@/layouts/Auth';
+import { MainLayout } from '@/layouts/Main';
+import { ErrorPage } from '@/pages/Error';
+import { ScannerPage } from '@/pages/Scanner';
+import { ShipmentManagementPage } from '@/pages/ShipmentManagement';
+import { ProfilePage } from '@/pages/Profile';
+import { AdminPage } from '@/pages/Admin';
 
 export const router = createBrowserRouter(
   [
@@ -20,6 +21,10 @@ export const router = createBrowserRouter(
             {
               index: true, // path: '/' 메인 페이지는 바로 스캐너
               element: <ScannerPage />,
+            },
+            {
+              path: 'shipment-management',
+              element: <ShipmentManagementPage />,
             },
             {
               path: 'profile',

@@ -20,7 +20,7 @@ export const MainLayout = () => {
   // 업무 메뉴 그룹
   const workMenuItems = [
     { path: '/', label: '출하 등록', icon: '📦' },
-    { path: '/shipment-logs', label: '출하 관리', icon: '📊' }, // 임시 메뉴 추가
+    { path: '/shipment-management', label: '출하 관리', icon: '📊' }, // 임시 메뉴 추가
     ...(user?.userType === 'admin' ? [{ path: '/admin', label: '관리자', icon: '⚙️' }] : []),
   ];
 
@@ -30,7 +30,7 @@ export const MainLayout = () => {
   // 하단 탭 메뉴 (모바일 전용)
   const bottomTabItems = [
     { path: '/', label: '출하등록', icon: '📦' },
-    { path: '/shipment-logs', label: '출하관리', icon: '📊' }, // 임시 메뉴 추가
+    { path: '/shipment-management', label: '출하관리', icon: '📊' }, // 임시 메뉴 추가
     ...(user?.userType === 'admin' ? [{ path: '/admin', label: '관리자', icon: '⚙️' }] : []),
     { path: '/profile', label: '내정보', icon: '👤' },
   ];
