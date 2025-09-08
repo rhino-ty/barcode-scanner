@@ -28,11 +28,12 @@ export const apiRequest = async <T = any>(url: string, options: RequestInit = {}
   const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
 
   const defaultOptions: RequestInit = {
+    method: 'GET',
+    ...options, // 사용자 옵션으로 덮어쓰기 (method 등)
     headers: {
       'Content-Type': 'application/json',
       ...options.headers,
     },
-    ...options,
   };
 
   console.log(`API 요청: ${defaultOptions.method || 'GET'} ${fullUrl}`);
