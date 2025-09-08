@@ -24,8 +24,9 @@ export const UserSearchBar = ({ searchTerm, onSearch, totalCount, currentCount, 
         </div>
 
         <button
+          type="button"
           onClick={onCreateUser}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+          className="cursor-pointer rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
         >
           사용자 추가
         </button>

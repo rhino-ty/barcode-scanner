@@ -11,8 +11,9 @@ export const AdminHeader = () => {
       </div>
 
       <button
+        type="button"
         onClick={refreshAll}
-        className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+        className="cursor-pointer rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
       >
         <span className="mr-2">🔄</span>
         새로고침

@@ -57,8 +57,9 @@ interface TabButtonProps {
 
 const TabButton = ({ tab, isActive, onClick }: TabButtonProps) => (
   <button
+    type="button"
     onClick={onClick}
-    className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+    className={`flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
       isActive
         ? 'bg-indigo-600 text-white'
         : 'bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600'
