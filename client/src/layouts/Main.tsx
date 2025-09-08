@@ -1,11 +1,9 @@
 import { Outlet, Link, useLocation } from 'react-router';
-import { useState } from 'react';
 import { useAuth } from '@/hooks/auth/useAuth.ts';
 
 export const MainLayout = () => {
   const location = useLocation();
   const { user, logout, isLoggingOut } = useAuth();
-  const [showUserMenu, setShowUserMenu] = useState(false);
 
   // 현재 경로 체크 함수
   const isActive = (path: string) => {
@@ -39,7 +37,7 @@ export const MainLayout = () => {
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-900">
-      {/* 🖥️ 데스크톱/태블릿 사이드바 (≥768px) */}
+      {/* 데스크톱/태블릿 사이드바 (≥768px) */}
       <aside className="hidden w-64 border-r border-slate-200 bg-white md:block dark:border-slate-700 dark:bg-slate-800">
         <div className="flex h-full flex-col">
           {/* 로고 & 사용자 정보 */}
@@ -51,45 +49,15 @@ export const MainLayout = () => {
               출하관리 시스템
             </Link>
 
-            <button
-              onClick={() => setShowUserMenu(!showUserMenu)}
-              className="flex w-full items-center rounded-lg p-3 text-left hover:bg-slate-50 dark:hover:bg-slate-700"
-            >
+            {/* 사용자 정보 표시 (클릭 불가) */}
+            <div className="flex items-center rounded-lg bg-slate-50 p-3 dark:bg-slate-700">
               <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-sm font-bold text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">
                 {user?.fullName?.charAt(0) || 'U'}
               </div>
               <div className="flex-1">
                 <div className="font-medium text-slate-900 dark:text-slate-100">{user?.fullName}</div>
-                <div className="text-sm text-slate-500 dark:text-slate-400">{user?.teamName}</div>
               </div>
-              <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-
-            {/* 사용자 드롭다운 메뉴 */}
-            {showUserMenu && (
-              <div className="mt-2 rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-600 dark:bg-slate-700">
-                <Link
-                  to="/profile"
-                  onClick={() => setShowUserMenu(false)}
-                  className="flex items-center px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-600"
-                >
-                  <span className="mr-3">👤</span>내 정보
-                </Link>
-                <button
-                  onClick={() => {
-                    setShowUserMenu(false);
-                    logout();
-                  }}
-                  disabled={isLoggingOut}
-                  className="flex w-full items-center px-4 py-3 text-left text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50 dark:text-slate-300 dark:hover:bg-slate-600"
-                >
-                  <span className="mr-3">🚪</span>
-                  {isLoggingOut ? '로그아웃 중...' : '로그아웃'}
-                </button>
-              </div>
-            )}
+            </div>
           </div>
 
           {/* 업무 메뉴 그룹 */}
@@ -151,9 +119,9 @@ export const MainLayout = () => {
         </div>
       </aside>
 
-      {/* 📱 모바일 레이아웃 */}
+      {/* 모바일 레이아웃 */}
       <div className="flex flex-1 flex-col md:ml-0">
-        {/* 📱 모바일 상단 헤더 (<768px) */}
+        {/* 모바일 상단 헤더 (<768px) */}
         <header className="border-b border-slate-200 bg-white p-4 md:hidden dark:border-slate-700 dark:bg-slate-800">
           <div className="flex items-center justify-between">
             {/* 로고 */}
@@ -161,44 +129,16 @@ export const MainLayout = () => {
               출하관리
             </Link>
 
-            {/* 사용자명 버튼 */}
-            <button
-              onClick={() => setShowUserMenu(!showUserMenu)}
-              className="flex items-center space-x-2 rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-700"
-            >
+            {/* 사용자 정보 표시 (클릭 불가) */}
+            <div className="flex items-center space-x-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 text-sm font-bold text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">
                 {user?.fullName?.charAt(0) || 'U'}
               </div>
-              <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{user?.fullName}</span>
-              <svg className="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-          </div>
-
-          {/* 모바일 사용자 드롭다운 */}
-          {showUserMenu && (
-            <div className="mt-2 rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-600 dark:bg-slate-700">
-              <div className="border-b border-slate-200 px-4 py-3 dark:border-slate-600">
-                <div className="text-sm font-medium text-slate-900 dark:text-slate-100">{user?.fullName}</div>
-                <div className="text-xs text-slate-500 dark:text-slate-400">{user?.teamName}</div>
-                {user?.userType === 'admin' && (
-                  <div className="text-xs text-purple-600 dark:text-purple-400">👑 관리자</div>
-                )}
+              <div className="flex flex-col">
+                <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{user?.fullName}</span>
               </div>
-              <button
-                onClick={() => {
-                  setShowUserMenu(false);
-                  logout();
-                }}
-                disabled={isLoggingOut}
-                className="flex w-full items-center px-4 py-3 text-left text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50 dark:text-slate-300 dark:hover:bg-slate-600"
-              >
-                <span className="mr-3">🚪</span>
-                {isLoggingOut ? '로그아웃 중...' : '로그아웃'}
-              </button>
             </div>
-          )}
+          </div>
         </header>
 
         {/* 메인 컨텐츠 */}
@@ -206,7 +146,7 @@ export const MainLayout = () => {
           <Outlet />
         </main>
 
-        {/* 📱 모바일 하단 탭 네비게이션 (<768px) */}
+        {/* 모바일 하단 탭 네비게이션 (<768px) */}
         <nav className="fixed right-0 bottom-0 left-0 border-t border-slate-200 bg-white md:hidden dark:border-slate-700 dark:bg-slate-800">
           <div className="flex">
             {bottomTabItems.map((item) => (
