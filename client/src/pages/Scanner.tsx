@@ -28,19 +28,38 @@ export const ScannerPage = () => {
   const scannerRef = useRef<HTMLDivElement>(null);
   const successTimer = useRef<number | null>(null);
 
+  // 모바일/태블릿 감지
+  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isTablet = /iPad|Android/i.test(navigator.userAgent) && window.innerWidth >= 768;
+
   // ===== 최적화된 카메라 제약조건 =====
   const getOptimizedConstraints = (deviceId: string) => {
-    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    if (isMobile) {
+    if (isTablet) {
+      // 태블릿: 높은 해상도로 정확도 우선
+      return {
+        width: { ideal: 1920, min: 1280 },
+        height: { ideal: 1080, min: 720 },
+        frameRate: { ideal: 30, min: 15 },
+        deviceId: { exact: deviceId },
+        facingMode: { ideal: 'environment' },
+        focusMode: { ideal: 'continuous' }, // 자동 초점
+        exposureMode: { ideal: 'continuous' }, // 자동 노출
+        whiteBalanceMode: { ideal: 'continuous' }, // 자동 화이트밸런스
+      };
+    } else if (isMobile) {
+      // 모바일: 안정성과 성능 균형
       return {
         width: { ideal: 1280, min: 720 },
         height: { ideal: 720, min: 480 },
         frameRate: { ideal: 30, min: 20 },
         deviceId: { exact: deviceId },
         facingMode: { ideal: 'environment' },
+        focusMode: { ideal: 'continuous' },
+        exposureMode: { ideal: 'continuous' },
+        whiteBalanceMode: { ideal: 'continuous' },
       };
     } else {
+      // 데스크톱
       return {
         width: { ideal: 1920, min: 1280 },
         height: { ideal: 1080, min: 720 },
@@ -140,10 +159,10 @@ export const ScannerPage = () => {
           target: scannerRef.current,
           constraints: getOptimizedConstraints(selectedCamera),
           area: {
-            top: '25%',
-            right: '15%',
-            left: '15%',
-            bottom: '25%',
+            top: '20%',
+            right: '10%',
+            left: '10%',
+            bottom: '20%',
           },
         },
         locator: {
@@ -151,10 +170,23 @@ export const ScannerPage = () => {
           halfSample: false,
         },
         decoder: {
-          readers: ['code_128_reader'], // CODE128 전용
+          readers: [
+            'code_128_reader',
+            {
+              format: 'code_128_reader',
+              config: {
+                // CODE128 디코더 최적화
+                normalizeBarSpaceWidth: true, // 바 간격 정규화
+                threshold: 160, // 임계값 조정 (기본: 160)
+                minBarSpacing: 1, // 최소 바 간격
+                maxBarSpacing: 3, // 최대 바 간격
+              },
+            },
+          ], // CODE128 전용
         },
         locate: true,
-        frequency: 25, // 스캔 속도 최적화
+        frequency: isMobile ? 8 : 15,
+        numOfWorkers: navigator.hardwareConcurrency > 4 ? 2 : 1, // 멀티코어 활용
       },
       (err: Error) => {
         if (err) {
