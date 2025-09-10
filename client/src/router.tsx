@@ -19,8 +19,12 @@ export const router = createBrowserRouter(
           element: <MainLayout />, // 메인 레이아웃 (헤더 + 컨텐츠)
           children: [
             {
-              index: true, // path: '/' 메인 페이지는 바로 스캐너
+              path: '/barcode-scanner',
               element: <ScannerPage />,
+            },
+            {
+              index: true, // path: '/' 메인 페이지는 바로 스캐너
+              element: <QRScannerPage />,
             },
             {
               path: 'shipment-management',
