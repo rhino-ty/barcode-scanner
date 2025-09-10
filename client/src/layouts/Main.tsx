@@ -20,6 +20,7 @@ export const MainLayout = () => {
   // 업무 메뉴 그룹
   const workMenuItems = [
     { path: '/', label: '출하 등록', icon: '📦' },
+    { path: '/qr-generator', label: 'S/N 생성', icon: '🏷️' },
     { path: '/shipment-management', label: '출하 관리', icon: '📊' }, // 임시 메뉴 추가
     ...(user?.userType === 'admin' ? [{ path: '/admin', label: '관리자', icon: '⚙️' }] : []),
   ];
@@ -27,10 +28,11 @@ export const MainLayout = () => {
   // 개인 메뉴 그룹 (데스크톱 사이드바 전용)
   const personalMenuItems = [{ path: '/profile', label: '내 정보', icon: '👤' }];
 
-  // 하단 탭 메뉴 (모바일 전용)
+  // 하단 탭 메뉴 (모바일 전용) - 주요 기능만
   const bottomTabItems = [
     { path: '/', label: '출하등록', icon: '📦' },
-    { path: '/shipment-management', label: '출하관리', icon: '📊' }, // 임시 메뉴 추가
+    { path: '/qr-generator', label: 'S/N생성', icon: '🏷️' },
+    { path: '/shipment-management', label: '출하 관리', icon: '📊' }, // 임시 메뉴 추가
     ...(user?.userType === 'admin' ? [{ path: '/admin', label: '관리자', icon: '⚙️' }] : []),
     { path: '/profile', label: '내정보', icon: '👤' },
   ];
@@ -155,7 +157,7 @@ export const MainLayout = () => {
                 to={item.path}
                 className={`flex flex-1 flex-col items-center py-3 text-xs font-medium transition-colors ${
                   isActive(item.path)
-                    ? 'text-indigo-600 dark:text-indigo-400'
+                    ? 'bg-slate-100 text-indigo-600 dark:bg-slate-900/10 dark:text-indigo-400'
                     : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
                 }`}
               >

@@ -6,6 +6,8 @@ import { ScannerPage } from '@/pages/Scanner';
 import { ShipmentManagementPage } from '@/pages/ShipmentManagement';
 import { ProfilePage } from '@/pages/Profile';
 import { AdminPage } from '@/pages/Admin';
+import { QRScannerPage } from '@/pages/QRScanner';
+import { QRGeneratorPage } from '@/pages/QRGenerator';
 
 export const router = createBrowserRouter(
   [
@@ -25,6 +27,10 @@ export const router = createBrowserRouter(
             {
               index: true, // path: '/' 메인 페이지는 바로 스캐너
               element: <QRScannerPage />,
+            },
+            {
+              path: 'qr-generator',
+              element: <QRGeneratorPage />,
             },
             {
               path: 'shipment-management',
